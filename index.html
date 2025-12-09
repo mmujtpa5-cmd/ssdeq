@@ -28,67 +28,39 @@
             padding-bottom: 30px;
         }
 
-        /* رسالة الترحيب - أصبحت أول عنصر في الواجهة ومزودة بحواف مدورة */
+        /* رسالة الترحيب */
         .welcome-message {
-            background-color: #3498db; /* اللون السماوي المطلوب */
+            background-color: #3498db; 
             color: white;
             padding: 15px;
             text-align: center;
             font-size: 1.5em;
             font-weight: bold;
-            border-radius: 10px 10px 0 0; /* حواف مدورة في الأعلى فقط */
+            border-radius: 10px 10px 0 0; 
             margin-bottom: 20px;
         }
         
-        /* حاوية النموذج والجدول - داخل main-content-wrapper */
+        /* حاوية النموذج والجدول */
         .content-area {
             padding: 0 30px;
         }
 
-        /* النموذج التفاعلي */
-        .interactive-form {
-            background: #ecf0f1; 
-            padding: 25px;
+        /* تنسيق حاوية نموذج جوجل */
+        .google-form-container {
+            max-width: 450px; /* لتوسيط النموذج المضمن */
+            margin: 20px auto 30px auto;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            max-width: 450px; 
-            margin: 20px auto 30px auto; 
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
-        .interactive-form h3 {
-            color: #2c3e50;
-            margin-top: 0;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input[type="text"],
-        .form-group input[type="date"] {
+
+        /* تنسيق إطار النموذج (iframe) */
+        .google-form-container iframe {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            direction: rtl; 
-        }
-        .form-group button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 15px;
+            height: 400px; /* ارتفاع افتراضي مناسب لنموذج بسيط */
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-        }
-        .form-group button:hover {
-            background-color: #2980b9;
+            display: block;
         }
 
         /* تنسيق الجدول */
@@ -131,26 +103,20 @@
         </div>
 
         <div class="content-area">
-            <div class="interactive-form">
-                <h3>تسجيل بيانات الطلاب</h3>
-                <form id="studentForm">
-                    <div class="form-group">
-                        <label for="studentName">اسم الطالب:</label>
-                        <input type="text" id="studentName" name="studentName" value="" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="studentDOB">تاريخ الميلاد:</label>
-                        <input type="date" id="studentDOB" name="studentDOB" value="" required>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit">إضافة وحفظ دائم</button>
-                    </div>
-                </form>
-                <p id="outputMessage" style="margin-top: 20px; font-weight: bold;"></p>
+            
+            <div class="google-form-container">
+                <iframe 
+                    src="https://docs.google.com/forms/d/e/1FAIpQLSdF8A7rM0JbE_IV7GeKCijbqRiLjhifduNg7nygPpzULP7EcQ/viewform?usp=embed_responsive" 
+                    frameborder="0" 
+                    marginheight="0" 
+                    marginwidth="0">
+                    جاري التحميل...
+                </iframe>
             </div>
             
             <div style="margin-top: 40px;">
-                <h2>📚 سجل الطلاب الحالي (محفوظ دائمًا)</h2>
+                <h2>📚 سجل الطلاب الحالي (غير مفعل للعرض التلقائي)</h2>
+                <p style="color: #e74c3c; font-weight: bold;">⚠️ ملاحظة: هذا الجدول لا يعرض البيانات المدخلة في نموذج جوجل تلقائياً. البيانات تُحفظ الآن بشكل دائم في جدول بيانات جوجل الخاص بك.</p>
                 <table>
                     <thead>
                         <tr>
@@ -164,79 +130,17 @@
             </div>
 
         </div> </div> <script>
-        const STORAGE_KEY = 'sadeqStudentsV2'; 
-        const tableBody = document.getElementById('studentTableBody');
-        const studentForm = document.getElementById('studentForm');
-        const outputMessage = document.getElementById('outputMessage');
-        const RESTRICTED_NAME = "منتظر سعد"; // الاسم المحظور
-
-
-        function getStoredStudents() {
-            const storedData = localStorage.getItem(STORAGE_KEY);
-            if (storedData) {
-                return JSON.parse(storedData); 
-            }
-            return [];
-        }
-
-        function saveStudents(students) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(students)); 
-        }
-
-        function addStudentToTable(name, dob) {
-            const newRow = tableBody.insertRow();
-            newRow.insertCell().textContent = name;
-            newRow.insertCell().textContent = dob;
-        }
-
-        function renderStudents() {
-            tableBody.innerHTML = '';
-            const students = getStoredStudents();
-            students.forEach(student => {
-                addStudentToTable(student.name, student.dob);
-            });
-        }
-
+        // تم حذف جميع الدوال المتعلقة بالحفظ المحلي Local Storage
+        
+        // إعداد رسالة للنموذج المضمن
         document.addEventListener('DOMContentLoaded', () => {
-            renderStudents(); 
-            outputMessage.textContent = 'تم بدء سجل الطلاب فارغاً وجاهز لاستقبال البيانات.';
-            outputMessage.style.color = '#2c3e50'; 
-        });
-
-
-        studentForm.addEventListener('submit', function(event) {
-            event.preventDefault(); 
-
-            const name = document.getElementById('studentName').value.trim();
-            const dob = document.getElementById('studentDOB').value.trim(); 
-            
-            // ----------------------------------------------------
-            // *** خاصية التحقق الجديدة ***
-            // التحقق مما إذا كان الاسم يبدأ بـ "منتظر سعد" (مع تجاهل حالة الأحرف والمسافات الزائدة)
-            const normalizedName = name.replace(/\s+/g, ' ').trim(); // تطبيع الاسم
-            if (normalizedName.startsWith(RESTRICTED_NAME)) {
-                outputMessage.textContent = `🛑 صاحب الاسم كبير الحجم لا يمكن اضافته`;
-                outputMessage.style.color = '#c0392b'; // لون أحمر للخطأ
-                return; // إيقاف تنفيذ الدالة وعدم حفظ البيانات
-            }
-            // ----------------------------------------------------
-
-            if (name && dob) {
-                const students = getStoredStudents();
-                students.push({ name: name, dob: dob });
-                saveStudents(students);
-                renderStudents();
-                
-                outputMessage.textContent = `✅ تم حفظ الطالب ${name} وتاريخ ميلاده ${dob} في سجل الطلاب بشكل دائم.`;
-                outputMessage.style.color = '#27ae60'; 
-                
-                document.getElementById('studentName').value = '';
-                document.getElementById('studentDOB').value = '';
-            } else {
-                outputMessage.textContent = 'الرجاء إدخال الاسم وتاريخ الميلاد لإضافته إلى السجل.';
-                outputMessage.style.color = '#e74c3c'; 
+            const outputMessage = document.getElementById('outputMessage');
+            if (outputMessage) {
+                outputMessage.textContent = 'تم ربط النموذج بنجاح بجدول بيانات جوجل للحفظ الدائم.';
+                outputMessage.style.color = '#27ae60';
             }
         });
+        
     </script>
 
 </body>
