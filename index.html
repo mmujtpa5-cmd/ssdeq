@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعدادية الصادق - الرئيسية</title>
+    <style>
+        /* التنسيقات العامة والخط */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Text", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: right; 
+            min-height: 100vh; 
+        }
+
+        /* حاوية الصفحة الرئيسية: لتركيز وتوسيط المحتوى */
+        .main-content-wrapper {
+            width: 90%;
+            max-width: 1000px; 
+            margin: 20px auto; 
+            overflow: hidden;
+            background-color: white; 
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding-bottom: 30px;
+        }
+
+        /* رسالة الترحيب - أصبحت أول عنصر في الواجهة ومزودة بحواف مدورة */
+        .welcome-message {
+            background-color: #3498db; /* اللون السماوي المطلوب */
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0; /* حواف مدورة في الأعلى فقط */
+            margin-bottom: 20px;
+        }
+        
+        /* حاوية النموذج والجدول - داخل main-content-wrapper */
+        .content-area {
+            padding: 0 30px;
+        }
+
+        /* النموذج التفاعلي */
+        .interactive-form {
+            background: #ecf0f1; 
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 450px; 
+            margin: 20px auto 30px auto; 
+        }
+        .interactive-form h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            direction: rtl; 
+        }
+        .form-group button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .form-group button:hover {
+            background-color: #2980b9;
+        }
+
+        /* تنسيق الجدول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: right;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* استعلام وسائط لتصغير حجم العناصر على الهواتف الصغيرة جداً (اختياري) */
+        @media (max-width: 600px) {
+            .content-area {
+                padding: 0 15px; 
+            }
+            .welcome-message {
+                font-size: 1.2em; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-content-wrapper">
+        
+        <div class="welcome-message">
+            مرحباً بكم إعدادية الصادق للبنين
+        </div>
+
+        <div class="content-area">
+            <div class="interactive-form">
+                <h3>تسجيل بيانات الطلاب</h3>
+                <form id="studentForm">
+                    <div class="form-group">
+                        <label for="studentName">اسم الطالب:</label>
+                        <input type="text" id="studentName" name="studentName" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentDOB">تاريخ الميلاد:</label>
+                        <input type="date" id="studentDOB" name="studentDOB" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">إضافة وحفظ دائم</button>
+                    </div>
+                </form>
+                <p id="outputMessage" style="margin-top: 20px; font-weight: bold;"></p>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <h2>📚 سجل الطلاب الحالي (محفوظ دائمًا)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم الكامل</th>
+                            <th>تاريخ الميلاد</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        </tbody>
+                </table>
+            </div>
+
+        </div> </div> <script>
+        const STORAGE_KEY = 'sadeqStudentsV2'; 
+        const tableBody = document.getElementById('studentTableBody');
+        const studentForm = document.getElementById('studentForm');
+        const outputMessage = document.getElementById('outputMessage');
+        const RESTRICTED_NAME = "منتظر سعد"; // الاسم المحظور
+
+
+        function getStoredStudents() {
+            const storedData = localStorage.getItem(STORAGE_KEY);
+            if (storedData) {
+                return JSON.parse(storedData); 
+            }
+            return [];
+        }
+
+        function saveStudents(students) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(students)); 
+        }
+
+        function addStudentToTable(name, dob) {
+            const newRow = tableBody.insertRow();
+            newRow.insertCell().textContent = name;
+            newRow.insertCell().textContent = dob;
+        }
+
+        function renderStudents() {
+            tableBody.innerHTML = '';
+            const students = getStoredStudents();
+            students.forEach(student => {
+                addStudentToTable(student.name, student.dob);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderStudents(); 
+            outputMessage.textContent = 'تم بدء سجل الطلاب فارغاً وجاهز لاستقبال البيانات.';
+            outputMessage.style.color = '#2c3e50'; 
+        });
+
+
+        studentForm.addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const name = document.getElementById('studentName').value.trim();
+            const dob = document.getElementById('studentDOB').value.trim(); 
+            
+            // ----------------------------------------------------
+            // *** خاصية التحقق الجديدة ***
+            // التحقق مما إذا كان الاسم يبدأ بـ "منتظر سعد" (مع تجاهل حالة الأحرف والمسافات الزائدة)
+            const normalizedName = name.replace(/\s+/g, ' ').trim(); // تطبيع الاسم
+            if (normalizedName.startsWith(RESTRICTED_NAME)) {
+                outputMessage.textContent = `🛑 صاحب الاسم كبير الحجم لا يمكن اضافته`;
+                outputMessage.style.color = '#c0392b'; // لون أحمر للخطأ
+                return; // إيقاف تنفيذ الدالة وعدم حفظ البيانات
+            }
+            // ----------------------------------------------------
+
+            if (name && dob) {
+                const students = getStoredStudents();
+                students.push({ name: name, dob: dob });
+                saveStudents(students);
+                renderStudents();
+                
+                outputMessage.textContent = `✅ تم حفظ الطالب ${name} وتاريخ ميلاده ${dob} في سجل الطلاب بشكل دائم.`;
+                outputMessage.style.color = '#27ae60'; 
+                
+                document.getElementById('studentName').value = '';
+                document.getElementById('studentDOB').value = '';
+            } else {
+                outputMessage.textContent = 'الرجاء إدخال الاسم وتاريخ الميلاد لإضافته إلى السجل.';
+                outputMessage.style.color = '#e74c3c'; 
+            }
+        });
+    </script>
+
+</body>
+</html>
